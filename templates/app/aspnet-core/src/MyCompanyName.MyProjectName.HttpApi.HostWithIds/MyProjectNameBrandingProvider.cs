@@ -6,6 +6,6 @@ namespace MyCompanyName.MyProjectName
     [Dependency(ReplaceServices = true)]
     public class MyProjectNameBrandingProvider : DefaultBrandingProvider
     {
-        public override string AppName => "MyProjectName";
+        public override string AppName => "UnirealchainProject1";
     }
 }
