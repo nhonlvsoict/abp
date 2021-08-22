@@ -15,6 +15,15 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { APP_ROUTE_PROVIDER } from './route.provider';
 import { CustomLoginComponent } from './components/custom-login/custom-login.component';
+import { ReactiveFormsModule } from '@angular/forms';
+
+import { SocialLoginModule, SocialAuthServiceConfig } from 'angularx-social-login';
+import { GoogleLoginProvider } from 'angularx-social-login';
+import { CustomRegisterComponent } from './components/custom-register/custom-register.component';
+import { BotDetectCaptchaModule } from 'angular-captcha';
+import { RecaptchaCommonModule } from 'ng-recaptcha/lib/recaptcha-common.module';
+import { RecaptchaFormsModule } from 'ng-recaptcha';
+import { RecaptchaDirective } from './directives/recaptcha.directive';
 
 @NgModule({
   imports: [
@@ -32,9 +41,29 @@ import { CustomLoginComponent } from './components/custom-login/custom-login.com
     SettingManagementConfigModule.forRoot(),
     NgxsModule.forRoot(),
     ThemeBasicModule.forRoot(),
+    ReactiveFormsModule,
+    SocialLoginModule,
+    // RecaptchaCommonModule,  //this is the recaptcha main module
+    // RecaptchaFormsModule, //this is the module for form incase form validation
   ],
-  declarations: [AppComponent, CustomLoginComponent],
-  providers: [APP_ROUTE_PROVIDER],
+  declarations: [AppComponent, CustomLoginComponent, CustomRegisterComponent, RecaptchaDirective],
+  providers: [
+    APP_ROUTE_PROVIDER,
+    {
+      provide: 'SocialAuthServiceConfig',
+      useValue: {
+        autoLogin: false,
+        providers: [
+          {
+            id: GoogleLoginProvider.PROVIDER_ID,
+            provider: new GoogleLoginProvider(
+              '111047510702-kqvikogg72muo19pggsc8cefai6dt1pi.apps.googleusercontent.com'
+            )
+          }
+        ]
+      } as SocialAuthServiceConfig,
+    }   
+  ],
   bootstrap: [AppComponent],
 })
 export class AppModule {}

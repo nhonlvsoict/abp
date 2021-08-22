@@ -1,0 +1,7 @@
+<captchaStyles>
+    <captchaStyle>
+      <name>yourFirstCaptchaStyle</name>
+      <userInputID>capcha</userInputID>
+    </captchaStyle>
+  </captchaStyles>
+</botdetect>

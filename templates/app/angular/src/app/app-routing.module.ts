@@ -1,17 +1,33 @@
+import { AuthGuard } from '@abp/ng.core';
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { CustomLoginComponent } from './components/custom-login/custom-login.component';
+import { CustomRegisterComponent } from './components/custom-register/custom-register.component';
 
 const routes: Routes = [
   {
     path: '',
     pathMatch: 'full',
-    loadChildren: () => import('./home/home.module').then(m => m.HomeModule),
+    redirectTo: "login"
   },
   {
     path: 'login',
     pathMatch: 'full',
-    component: CustomLoginComponent 
+    component: CustomLoginComponent,
+    // canActivate: [PermissionGuard],
+    // data: {
+    //     requiredPolicy: 'MyProjectName offline_access', // policy key for your component
+    // },
+    
+  },
+  {
+    path: 'register',
+    pathMatch: 'full',
+    component: CustomRegisterComponent 
+  },
+  {
+    path: 'home',
+    loadChildren: () => import('./home/home.module').then(m => m.HomeModule),
   },
   {
     path: 'account',

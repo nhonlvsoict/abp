@@ -27,4 +27,5 @@ export const environment = {
       rootNamespace: 'MyCompanyName.MyProjectName',
     },
   },
+  reCaptchaSitekey: "6Lfn2BAcAAAAAHpNsL5vyp4yUO6BevWxyb_TOT6j"
 } as Environment;

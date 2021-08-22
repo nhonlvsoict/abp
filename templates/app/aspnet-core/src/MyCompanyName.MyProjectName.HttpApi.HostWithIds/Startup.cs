@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Configuration;
+using MyCompanyName.MyProjectName.Middlewares;
 namespace MyCompanyName.MyProjectName
 {
     public class Startup
@@ -27,6 +28,10 @@ namespace MyCompanyName.MyProjectName
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILoggerFactory loggerFactory)
         {
             app.InitializeApplication();
+
+            app.UseMiddleware<CaptchaMiddleware>() ;
+            // configure your application pipeline to use SimpleCaptcha middleware
+            // app.UseCaptcha(Configuration.GetSection("BotDetect"));
         }
     }
 }
