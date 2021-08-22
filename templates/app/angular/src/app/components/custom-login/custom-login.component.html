@@ -4,7 +4,7 @@
         <div class="card-body">
             <div class="mb-4">
                 <h5 class="card-title">Login</h5>
-                <strong> Are you a new user? <a class="mr-1" routerLink="/register">Register</a> </strong>
+                <strong> Are you a new user? <a class="mr-1" href="/register">Register</a> </strong>
             </div>
             <form [formGroup]="loginForm" (ngSubmit)="logIn()">
                 <div class="form-group">
@@ -26,14 +26,14 @@
                     </div>
                     <button style="width: 100%;" type="submit" class="btn btn-primary">Login</button>
                     </form>
-            <div>
+            <!-- <div>
                 <div class="mt-2">
                     <h6>Or login with:</h6>
                     <button type="button" (click)="loginWithGoogle()" class="btn btn-danger">
                         Google
                     </button>
                 </div>
-            </div>
+            </div> -->
         </div>
     </div>
     
