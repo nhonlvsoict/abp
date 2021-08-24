@@ -1,0 +1,36 @@
+<router-outlet></router-outlet>
+
+<abp-modal [(visible)]="isUserQuickViewVisible">
+    <ng-template #abpHeader>
+        <h3>Enable Two Factor Authentication</h3>
+    </ng-template>
+
+    <ng-template #abpBody>
+        <form id="form" [formGroup]="tfaForm" (ngSubmit)="submitTFA()">
+            <div class="form-group">
+            <label for="qr" style="vertical-align: top;">Scan below QR code:</label>
+            <img id="qr" src={{tfaConfig?.qrCodeSetupImageUrl}} /><br/>
+           
+            </div>
+            <div class="form-group">
+                <label> Setup code: {{tfaConfig?.manualEntryKey}}</label>
+            </div>
+            
+            <div class="form-group">
+                <label for="twofactor-code">Input security code:</label><span> * </span>
+                <input type="text" id="twofactor-code" class="form-control" formControlName="twoFactorCode" autofocus />
+            </div>
+        </form>
+    </ng-template>
+
+    <ng-template #abpFooter>
+        <button type="button" class="btn btn-secondary" abpClose>
+            Cancel
+        </button>
+
+        <button form="form" type="submit" class="btn btn-primary" [disabled]="tfaForm.invalid || tfaForm.pristine">
+            <i class="fa fa-check mr-1"></i>
+            Confirm
+        </button>
+    </ng-template>
+</abp-modal>

@@ -1,5 +1,5 @@
 import { AccountConfigModule } from '@abp/ng.account/config';
-import { CoreModule } from '@abp/ng.core';
+import { ApiInterceptor, CoreModule } from '@abp/ng.core';
 import { registerLocale } from '@abp/ng.core/locale';
 import { IdentityConfigModule } from '@abp/ng.identity/config';
 import { SettingManagementConfigModule } from '@abp/ng.setting-management/config';
@@ -24,6 +24,9 @@ import { BotDetectCaptchaModule } from 'angular-captcha';
 import { RecaptchaCommonModule } from 'ng-recaptcha/lib/recaptcha-common.module';
 import { RecaptchaFormsModule } from 'ng-recaptcha';
 import { RecaptchaDirective } from './directives/recaptcha.directive';
+import { EnableTfaComponent } from './components/enable-tfa/enable-tfa.component';
+import { TfaExtendedComponent } from './identity-extended/tfa-extended/tfa-extended.component';
+import { HTTP_INTERCEPTORS } from '@angular/common/http';
 
 @NgModule({
   imports: [
@@ -35,6 +38,7 @@ import { RecaptchaDirective } from './directives/recaptcha.directive';
       registerLocaleFn: registerLocale(),
     }),
     ThemeSharedModule.forRoot(),
+    // ThemeSharedModule,
     AccountConfigModule.forRoot(),
     IdentityConfigModule.forRoot(),
     TenantManagementConfigModule.forRoot(),
@@ -46,7 +50,7 @@ import { RecaptchaDirective } from './directives/recaptcha.directive';
     // RecaptchaCommonModule,  //this is the recaptcha main module
     // RecaptchaFormsModule, //this is the module for form incase form validation
   ],
-  declarations: [AppComponent, CustomLoginComponent, CustomRegisterComponent, RecaptchaDirective],
+  declarations: [AppComponent, CustomLoginComponent, CustomRegisterComponent, RecaptchaDirective, EnableTfaComponent],
   providers: [
     APP_ROUTE_PROVIDER,
     {
@@ -62,7 +66,7 @@ import { RecaptchaDirective } from './directives/recaptcha.directive';
           }
         ]
       } as SocialAuthServiceConfig,
-    }   
+    } 
   ],
   bootstrap: [AppComponent],
 })

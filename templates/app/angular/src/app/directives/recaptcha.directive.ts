@@ -1,4 +1,4 @@
-import { Directive, Output, EventEmitter, ElementRef, NgZone, Inject, OnInit, OnDestroy} from "@angular/core";
+import { Directive, Input, Output, EventEmitter, ElementRef, NgZone, Inject, OnInit, OnDestroy} from "@angular/core";
 import { DOCUMENT } from '@angular/common';
 import { environment } from "src/environments/environment";
 
@@ -10,6 +10,7 @@ export class RecaptchaDirective implements OnInit, OnDestroy{
   @Output() recaptchaSuccess = new EventEmitter<string>();
   @Output() recaptchaExpired = new EventEmitter<unknown>();
   @Output() recaptchaError = new EventEmitter<unknown>();
+  @Input()  resetCaptcha = () => {};
 
   private readonly scriptId = 'volt-recaptcha';
   widgetId: number;
@@ -42,9 +43,9 @@ export class RecaptchaDirective implements OnInit, OnDestroy{
   }
 
   private addScript() {
-    if (this.dom.getElementById(this.scriptId) != null) {
-      return;
-    }
+    // if (this.dom.getElementById(this.scriptId) != null) {
+    //   return;
+    // }
 
     const script = this.dom.createElement('script');
     script.src = 'https://www.google.com/recaptcha/api.js?onload=recaptchaCallback&render=explicit';
@@ -75,5 +76,6 @@ export class RecaptchaDirective implements OnInit, OnDestroy{
   private renderCaptcha(config: any): number {
     return (window as any).grecaptcha.render(this.elementRef.nativeElement, config);
   }
+  private ren
 
 }

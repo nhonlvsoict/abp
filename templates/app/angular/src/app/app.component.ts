@@ -14,9 +14,9 @@ export class AppComponent {
   constructor(
     private replaceableComponents: ReplaceableComponentsService, // injected the service
   ) {
-    this.replaceableComponents.add({
-      component: CustomLoginComponent,
-      key: eIdentityComponents.Users,
-    });
+    // this.replaceableComponents.add({
+    //   component: CustomLoginComponent,
+    //   key: eIdentityComponents.Users,
+    // });
   }
 }

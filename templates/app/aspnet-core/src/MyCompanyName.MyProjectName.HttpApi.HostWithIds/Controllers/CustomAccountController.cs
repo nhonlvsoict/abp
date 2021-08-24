@@ -16,6 +16,8 @@ using UserLoginInfo = Volo.Abp.Account.Web.Areas.Account.Controllers.Models.User
 using IdentityUser = Volo.Abp.Identity.IdentityUser;
 using Volo.Abp;
 using MyCompanyName.MyProjectName.Models;
+using Google.Authenticator;
+using Microsoft.AspNetCore.Authorization;
 
 namespace MyCompanyName.MyProjectName.Controllers
 {
@@ -81,26 +83,65 @@ namespace MyCompanyName.MyProjectName.Controllers
             // token verified in model declaration
             return Ok(Json("Success"));
         }
+        [Authorize]
+        [HttpGet]
+        [Route("enable-twofactor-authentication")]
+        public virtual async Task<ActionResult> EnableTwoFactorAuthentication()
+        {
+            // CurrentUser
+            var user = await UserManager.GetUserAsync(HttpContext.User);
+            TwoFactorAuthenticator twoFactor = new TwoFactorAuthenticator();
+            var setupInfo =
+                twoFactor.GenerateSetupCode("my-app", user.Email, TwoFactorKey(user), false, 3);
+            var data = new {
+                ManualEntryKey = setupInfo.ManualEntryKey,
+                QrCodeSetupImageUrl = setupInfo.QrCodeSetupImageUrl
+            };
+            return Ok(Json(data));
+        }
+        [Authorize]
+        [HttpPost]
+        [Route("enable-twofactor-authentication")]
+        public virtual async Task<ActionResult>  EnableTwoFactorAuthentication(string inputCode)
+        {
+            // inputCode = context.Request?.Raw?["inputCode"];
+            var user = await UserManager.GetUserAsync(HttpContext.User);
+            TwoFactorAuthenticator twoFactor = new TwoFactorAuthenticator();
+            bool isValid = twoFactor.ValidateTwoFactorPIN(TwoFactorKey(user), inputCode);
+            if (!isValid)
+            {
+                return Unauthorized(Json("TFA Code validation failed!"));
+            }
 
+            await UserManager.SetTwoFactorEnabledAsync(user, true);
+
+            return Ok();
+        }
+        private static string TwoFactorKey(IdentityUser user)
+        {
+            return $"myverysecretkey+{user.UserName}";
+        }
         protected virtual async Task ReplaceEmailToUsernameOfInputIfNeeds(UserLoginInfo login)
         {
+            // neu ko phai valid email thi la username
             if (!ValidationHelper.IsValidEmailAddress(login.UserNameOrEmailAddress))
             {
                 return;
             }
-
+            //tim theo username
             var userByUsername = await UserManager.FindByNameAsync(login.UserNameOrEmailAddress);
             if (userByUsername != null)
             {
                 return;
             }
-
+            //tim theo email
             var userByEmail = await UserManager.FindByEmailAsync(login.UserNameOrEmailAddress);
+            // neu bang null thi loi, khac null tuc la nguoi dung nhap vao email
             if (userByEmail == null)
             {
                 return;
             }
-
+            // gan bang username
             login.UserNameOrEmailAddress = userByEmail.UserName;
         }
         private static AbpLoginResult GetAbpLoginResult(SignInResult result)

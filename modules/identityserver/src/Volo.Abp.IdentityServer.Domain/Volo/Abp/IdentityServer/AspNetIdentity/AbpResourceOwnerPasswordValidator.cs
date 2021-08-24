@@ -22,6 +22,7 @@ using Volo.Abp.Security.Claims;
 using Volo.Abp.Uow;
 using Volo.Abp.Validation;
 using IdentityUser = Volo.Abp.Identity.IdentityUser;
+using Google.Authenticator;
 
 namespace Volo.Abp.IdentityServer.AspNetIdentity
 {
@@ -155,32 +156,36 @@ namespace Volo.Abp.IdentityServer.AspNetIdentity
                 context.Result = new GrantValidationResult(TokenRequestErrors.InvalidGrant, errorDescription);
             }
         }
-
+        protected static string TwoFactorKey(IdentityUser user)
+        {
+            return $"myverysecretkey+{user.UserName}";
+        }
         protected virtual async Task HandleTwoFactorLoginAsync(ResourceOwnerPasswordValidationContext context, IdentityUser user)
         {
-            var twoFactorProvider = context.Request?.Raw?["TwoFactorProvider"];
+            
             var twoFactorCode = context.Request?.Raw?["TwoFactorCode"];
-            if (!twoFactorProvider.IsNullOrWhiteSpace() && !twoFactorCode.IsNullOrWhiteSpace())
+
+            if (!twoFactorCode.IsNullOrWhiteSpace())
             {
-                var providers = await UserManager.GetValidTwoFactorProvidersAsync(user);
-                if (providers.Contains(twoFactorProvider) && await UserManager.VerifyTwoFactorTokenAsync(user, twoFactorProvider, twoFactorCode))
+                TwoFactorAuthenticator twoFactor = new TwoFactorAuthenticator();
+                bool isValid = twoFactor.ValidateTwoFactorPIN(TwoFactorKey(user), twoFactorCode);
+                if (isValid)
                 {
                     await SetSuccessResultAsync(context, user);
                     return;
                 }
-
                 Logger.LogInformation("Authentication failed for username: {username}, reason: InvalidAuthenticatorCode", context.UserName);
                 context.Result = new GrantValidationResult(TokenRequestErrors.InvalidGrant, Localizer["InvalidAuthenticatorCode"]);
             }
             else
             {
                 Logger.LogInformation("Authentication failed for username: {username}, reason: RequiresTwoFactor", context.UserName);
-                var twoFactorToken = await UserManager.GenerateUserTokenAsync(user, TokenOptions.DefaultProvider, nameof(SignInResult.RequiresTwoFactor));
+                // var twoFactorToken = await UserManager.GenerateUserTokenAsync(user, TokenOptions.DefaultProvider, nameof(SignInResult.RequiresTwoFactor));
                 context.Result = new GrantValidationResult(TokenRequestErrors.InvalidGrant, nameof(SignInResult.RequiresTwoFactor),
                     new Dictionary<string, object>()
                     {
                         {"userId", user.Id},
-                        {"twoFactorToken", twoFactorToken}
+                        // {"twoFactorToken", twoFactorToken}
                     });
 
                 await IdentitySecurityLogManager.SaveAsync(new IdentitySecurityLogContext
@@ -266,5 +271,6 @@ namespace Volo.Abp.IdentityServer.AspNetIdentity
 
             return Task.CompletedTask;
         }
+        
     }
 }

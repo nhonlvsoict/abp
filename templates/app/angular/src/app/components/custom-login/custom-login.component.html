@@ -4,28 +4,30 @@
         <div class="card-body">
             <div class="mb-4">
                 <h5 class="card-title">Login</h5>
-                <strong> Are you a new user? <a class="mr-1" href="/register">Register</a> </strong>
+                <strong> Are you a new user? <a class="mr-1" routerLink="/register">Register</a> </strong>
             </div>
-            <form [formGroup]="loginForm" (ngSubmit)="logIn()">
+            <form [formGroup]="loginForm" (ngSubmit)="verifyCaptcha()">
                 <div class="form-group">
                     <label for="username">Username or email address</label>
-                    <input formControlName="username" name="username" type="text" class="form-control" id="username" required/>
-                    
+                    <input formControlName="username" name="username" type="text" class="form-control" id="username"
+                        required />
+
                 </div>
                 <div class="form-group">
                     <label for="password">Password</label>
-                    <input formControlName="password" name="password" type="password" class="form-control"
-                        id="password" required/>
+                    <input formControlName="password" name="password" type="password" class="form-control" id="password"
+                        required />
                 </div>
                 <div class="form-check mb-4">
-                    <input formControlName="rememberMe" class=" form-check-input" type="checkbox" id="rememberMe" name="rememberMe" value="true">
+                    <input formControlName="rememberMe" class=" form-check-input" type="checkbox" id="rememberMe"
+                        name="rememberMe" value="true">
                     <label class="form-check-label" for="rememberMe">Remember me</label>
-                    </div>
-                    <div class="mb-2"> 
-                        <div  appRecaptcha (recaptchaSuccess)="onRecaptchaSuccess($event) "></div>
-                    </div>
-                    <button style="width: 100%;" type="submit" class="btn btn-primary">Login</button>
-                    </form>
+                </div>
+                <div class="mb-2">
+                    <div appRecaptcha (recaptchaSuccess)="onRecaptchaSuccess($event) "></div>
+                </div>
+                <button style="width: 100%;" type="submit" class="btn btn-primary">Login</button>
+            </form>
             <!-- <div>
                 <div class="mt-2">
                     <h6>Or login with:</h6>
@@ -36,5 +38,30 @@
             </div> -->
         </div>
     </div>
-    
+
 </div>
+<abp-modal [(visible)]="isModalOpen" [busy]="inProgress">
+    <ng-template #abpHeader>
+        <h3>Two factor Authenticator</h3>
+    </ng-template>
+
+    <ng-template #abpBody>
+        <form id="form" [formGroup]="tfaForm" (ngSubmit)="submitTFA()">
+            <div class="form-group">
+                <label for="twofactor-code">Authentication Code:</label><span> * </span>
+                <input type="text" id="twofactor-code" class="form-control" formControlName="twoFactorCode" autofocus />
+            </div>
+        </form>
+    </ng-template>
+
+    <ng-template #abpFooter>
+        <button type="button" class="btn btn-secondary" abpClose>
+            Cancel
+        </button>
+
+        <button form="form" class="btn btn-primary" [disabled]="tfaForm.invalid || tfaForm.pristine">
+            <i class="fa fa-check mr-1"></i>
+            Confirm
+        </button>
+    </ng-template>
+</abp-modal>
